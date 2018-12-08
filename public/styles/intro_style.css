@@ -1,49 +1,11 @@
-* {
-	padding: 0;
-	margin: 0;
-	outline: none;
-}
 
-body {
-	font: 14px/20px sans-serif;
-	color: rgb(75, 75, 75);
-}
-
-header {
-	height: 50px;
-	width: 100%;
-	background-color: rgb(201, 201, 201);
-	display: flex;
-	align-items: center;
-	position: relative;
-}
-
-.title {
-	position: absolute;
-	left: 0;
-	padding: 10px 10px;
-}
-
-.title span {
-	color: green;
-	font: bold 2em serif;
-}
-
-.controls {
-	position: absolute;
-	right: 0;
-	padding: 10px 20px;
-}
-
-.controls span{
-	padding: 0 10px;
-}
-
+/* Область вывода сообщений для игрока */
 .intro {
 	width: 100%;
 	text-align: center;
 }
 
+/* Окно диалога с игроком */
 .describe {
 	width: 40%;
 	margin: 60px auto;
@@ -55,14 +17,17 @@ header {
 	display: none;
 }
 
+/*  */
 .describe p:not(:last-child) {
 	margin-bottom: 10px;
 }
 
+/* Кнопка Далее */
 .button_next {
 	text-align: end;
 }
 
+/* выравнивание текста в окне с сообщениями */
 .describe_text {
 	text-align: left;
 }
@@ -77,6 +42,7 @@ button {
 	cursor: pointer;
 }
 
+/* Кнопка старта */
 .start {
 	margin: auto;
 	font-size: 2em;
@@ -84,7 +50,13 @@ button {
 	margin-top: 50px;
 }
 
+/* Кнопка начала игры */
 .btnGO {
 	display: none;
+}
+
+a {
+	text-decoration: none;
+	color: inherit;
 }
 
