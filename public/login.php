@@ -4,6 +4,7 @@
 	<meta charset="UTF-8">
 	<title>Login</title>
 </head>
+<body>
 
 <?php
 include_once('connect.php');
@@ -23,25 +24,12 @@ if ($qSameUser->num_rows == 0) {
 	if (!$result) {
 		die('Что то пошло не так');
 	}
-} 
-
-$fileName = 'content/describe.txt';
-
-// Возвращает дескриптор или false
-$pointer = fopen($fileName, 'r');
-
-// Чтение по строкам.
-while (!feof($pointer)) {
-	$textDesc .= fgets($pointer) . "<br>";
 }
 
-fclose($pointer);
-
-echo $textDesc;
+$currentUser = $name;
+// _____________________
 
 ?>
 
-<body>
-	
 </body>
 </html>
