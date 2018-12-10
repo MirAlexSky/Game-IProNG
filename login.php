@@ -27,7 +27,6 @@ if ($qSameUser->num_rows == 0) {
 }
 
 $currentUser = $name;
-// _____________________
 
 ?>
 
