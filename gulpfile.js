@@ -45,6 +45,11 @@ gulp.task('images', function() {
 
 });
 
+gulp.task('html', function() {
+    gulp.src('./assets/*.html')
+        .pipe(gulp.dest('./public/'));
+});
+
 // Задача "watch". Запускается командой "gulp watch"
 // Она следит за изменениями файлов и автоматически запускает другие задачи
 gulp.task('watch', function () {
@@ -53,7 +58,8 @@ gulp.task('watch', function () {
 	// При изменение файлов *.js папке "javascripts" и подпапках запускаем задачу js
 	gulp.watch('./assets/javascripts/**/*.js', ['js']);
 	// При изменение любых файлов в папке "images" и подпапках запускаем задачу images
-	gulp.watch('./assets/images/**/*', ['images']);
+    gulp.watch('./assets/images/**/*', ['images']);
+    gulp.watch('./assets/*.html', ['html']);
 });
 
 gulp.task('default', ['watch']);

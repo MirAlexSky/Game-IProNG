@@ -1,0 +1,90 @@
+* {
+	padding: 0;
+	margin: 0;
+	outline: none;
+}
+
+body {
+	font: 14px/20px sans-serif;
+	color: rgb(75, 75, 75);
+}
+
+header {
+	height: 50px;
+	width: 100%;
+	background-color: rgb(201, 201, 201);
+	display: flex;
+	align-items: center;
+	position: relative;
+}
+
+.title {
+	position: absolute;
+	left: 0;
+	padding: 10px 10px;
+}
+
+.title span {
+	color: green;
+	font: bold 2em serif;
+}
+
+.controls {
+	position: absolute;
+	right: 0;
+	padding: 10px 20px;
+}
+
+.controls span{
+	padding: 0 10px;
+}
+
+.intro {
+	width: 100%;
+	text-align: center;
+}
+
+.describe {
+	width: 40%;
+	margin: 60px auto;
+	border: 1px solid rgb(255, 0, 0);
+	padding: 20px;
+	background-color: greenyellow;
+	font-size: 1.6em;
+	line-height: 130%;
+	display: none;
+}
+
+.describe p:not(:last-child) {
+	margin-bottom: 10px;
+}
+
+.button_next {
+	text-align: end;
+}
+
+.describe_text {
+	text-align: left;
+}
+
+button {
+	padding: 10px;
+	text-transform: uppercase;
+	font: bold 0.6em sans-serif;
+	color: white;
+	border: 1px solid rgb(253, 253, 253);
+	background-color: red;
+	cursor: pointer;
+}
+
+.start {
+	margin: auto;
+	font-size: 2em;
+	border: 2px solid rgb(22, 236, 22); 
+	margin-top: 50px;
+}
+
+.btnGO {
+	display: none;
+}
+
