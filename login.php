@@ -1,34 +1,44 @@
+<?php
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
+<?php 
+	$userName = $_COOKIE['userName'];
+	if ($userName != "") {
+		header('Location', 'game.php');
+	}
+
+?>
+
+<link rel="stylesheet" href="css/font_style.css">
+<link rel="stylesheet" href="css/base_style.css">
+<link rel="stylesheet" href="css/header_style.css">
+<link rel="stylesheet" href="css/login.style.css">
+
 <head>
 	<meta charset="UTF-8">
 	<title>Login</title>
 </head>
+
 <body>
+	<div class="container">
 
-<?php
-include_once('connect.php');
+		<form action="login_check.php" method="POST" name="login" enctype="multipart/form-data">
+			<p>
+				<input type="text" name="name" placeholder="Имя">
+			</p>
+			<label>
+				Выберите себе аватар
+				<input type="file" accept="image/*" name="photo">
+			</label>
+			<input type="submit" name="submit" value="В бой!">
+		</form>
 
-$name = $_POST['name'];
+	</div>
 
-// Проверяем, существует ли уже такой пользователь
-// Если нет, создаём и приветствуем
-// Если да, приветствуем и 
-// сообщаем ему его лучший результат
-$qSameUser = $mysqli->query("Select login from game where login = '$name'");
-
-if ($qSameUser->num_rows == 0) {
-	
-	$result = $mysqli->query("INSERT into game (login, score) values ('$name', 0)");
-
-	if (!$result) {
-		die('Что то пошло не так');
-	}
-}
-
-$currentUser = $name;
-
-?>
-
+	<script src="/public/scripts/login.js"></script>
 </body>
+
 </html>
