@@ -1,0 +1,12 @@
+{
+    "name": "mirsky/i-pro-ng",
+    "authors": [
+        {
+            "name": "Alex Sinus",
+            "email": "miralexsky@gmail.ru"
+        }
+    ],
+    "require": {
+        "twig/twig": "^2.0"
+    }
+}

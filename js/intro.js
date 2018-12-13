@@ -22,48 +22,48 @@ let describes = [
 let descStep = 0;
 let btnStart;
 
+// onLoad
 $(function() {
 	btnNext= $('.btn_next');
 	textDescribe = $('.describe_text');
 	btnStart = $('.start');
 
+	// Листание диалога
 	btnNext.click(nextDescribe);
 
+	// Начало игры
 	btnStart.click(function() {
 		$('.describe').show();
-		btnStart.hide();
+		btnStart.hide(); 
 		nextDescribe();
 	});
 });
 
+// Вывод текста в стиле печатающегося
 function typeText(text) {
 	let i = 0;
-
-	btnNext.hide();
-	console.log('btn is hide');
 
 	let typeing = function() {
 		if (text.length > i) {
 			textDescribe.append(text[i]);
 			i++;
-			setTimeout(typeing, 1);
+			setTimeout(typeing, 500);
 		} else {
-
 			if (descStep != describes.length) {
 				btnNext.show();
 			} else {
 				$(".btnGO").show();
 			}
 		}
-	}
+	};
 
 	typeing();
 }
 
 function nextDescribe() {
+	// Прячем кнопку. Печатаем следующий диалог.
+	btnNext.hide();
 	textDescribe.text("");
 	typeText(describes[descStep]);
 	descStep++;
-
-
 }
