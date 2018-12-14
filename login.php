@@ -2,8 +2,7 @@
 
 	require_once("vendor/autoload.php");
 
-	$userName = $_COOKIE['userName'];
-	if ($userName != "") {
+	if (isset($_COOKIE['userName'])) {
 		header('Location: game.php');
 	}
 

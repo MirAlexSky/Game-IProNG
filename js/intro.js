@@ -47,7 +47,7 @@ function typeText(text) {
 		if (text.length > i) {
 			textDescribe.append(text[i]);
 			i++;
-			setTimeout(typeing, 500);
+			setTimeout(typeing, 1);
 		} else {
 			if (descStep != describes.length) {
 				btnNext.show();
