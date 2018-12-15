@@ -1,9 +1,3 @@
-<?php
-
-?>
-
-<!DOCTYPE html>
-<html lang="en">
 <?php 
 	$userName = $_COOKIE['userName'];
 	if ($userName != "") {
@@ -11,6 +5,9 @@
 	}
 
 ?>
+
+<!DOCTYPE html>
+<html lang="en">
 
 <link rel="stylesheet" href="css/font_style.css">
 <link rel="stylesheet" href="css/base_style.css">
