@@ -299,7 +299,6 @@ function moveBullet(bullet) {
 
 		if (bullet.x > canvas.width) {
 			bullets.splice(bullets.indexOf(bullet), 1);
-			delete bullet;
 			return;
 		}
 
