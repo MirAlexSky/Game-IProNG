@@ -1,30 +1,56 @@
 <?php
-include_once('connect.php');
 
- if ($_SERVER['HTTP_REFERER'] == 'http://iprong/login.php') {
-	initUser();
+include_once('connect.php');
+include_once('twig_helper.php');
+
+/* 
+ * We find out, whether name is in the POST
+ * if it is, initing user via POST['name]
+ * else, do it via cookies
+ */
+if ( isset($_POST['name']) ) {
+	$user = initUser();
  } else {
-	 loadUser();
+	$user = loadUser();
+	if ($user == null) {
+		header('Location: login.php');
+	}
  }
 
+// Fetch values
+$name =  $user['name'];
+$photo = $user['photo'];
+$score = $user['score'];
+ 
+// Current user
+setcookie('userName', $name);
+$currentUser = $name;
 
- function initUser() {
-	$name = $_POST['name'];
+$twigtmp = iniTmp('preMenu.twig');
+
+echo $twigtmp->render(array(
+	"name"      => $name,
+	"photoPath" => $photoFullName, 
+	"score"     => $score,
+));
+
+// Get user via POST
+function initUser() {
+	$name =  $_POST['name'];
 	$photo = $_FILES['photo'];
 	
-	// Проверяем, существует ли уже такой пользователь
-	// Если нет, создаём и приветствуем
-	// Если да, приветствуем и 
-	// сообщаем ему его лучший результат
-	$qSameUser = $mysqli->query("Select login, photo, score from game where login = '$name'");
+	// Find out, whether this user is already in the DB
+	// If he isn't, create new user 
+	// If he is, load that user
+	$qUser = $mysqli->query("Select login, photo, score from game where login = '$name'");
 	
-	if ($qSameUser->num_rows == 0) {
+	if ($qUser->num_rows == 0) {
 	
-		// загружаем фотографию
+		// Loading photo
 		$photoFullName = "images/default.png";
 	
 		if ($photo['error'] == UPLOAD_ERR_OK) {
-			$photoDir = 'images/';
+			$photoDir = 'images/profile';
 	
 			$tmp_name = $photo['tmp_name'];
 			$photoName = basename($photo['name']);
@@ -33,40 +59,28 @@ include_once('connect.php');
 			move_uploaded_file($tmp_name, $photoFullName);
 		}
 		
-		$result = $mysqli->query("INSERT into game (login, photo, score) values ('$name', '$photoFullName', 0)");
-	
-		// текущий счёт = 0
-		$score = 0;
-	} else {
-		$users = $qSameUser->fetch_assoc();
-	
-		$photoFullName = $users['photo'];
-		$score = $users['score'];
+		$mysqli->query("INSERT into game (login, photo, score) values ('$name', '$photoFullName', 0)");
+
+		$qUser = $mysqli->query("Select login, photo, score from game where login = '$name'");
 	}
+	
+	$user = $qUser->fetch_assoc();
+	return $user;
  }
 
- function loadUser() {
+
+// Get user via cookies
+function loadUser() {
+	if (!isset($_COOKIE['userName'])) {
+		return null;
+	}
+
 	$name = $_COOKIE['userName'];
-	$qSameUser = $mysqli->query("Select login, photo, score from game where login = '$name'");
+
+	$qUser = $mysqli->query("Select login, photo, score from game where login = '$name'");
+	$user = $qUser->getch_assoc();
+
+	return $user;
  }
-
-// текущий игрок
-setcookie('userName', $name);
-$currentUser = $name;
-
-$twigtmp = iniTmp();
-echo $twigtmp->render(array(
-	"photoPath" => $photoFullName, 
-	"score" => $score));
-
-function iniTmp() {
-	require_once("vendor/autoload.php");
-
-	$loader = new Twig_Loader_Filesystem('/');
-	$twig = new Twig_Environment($loader);
-	$template = $twig->load('preMenu.twig');
-
-	return $template;
-}
 
 ?>
