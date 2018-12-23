@@ -1,3 +1,85 @@
-#canvas {
-	border: 1px solid black;
+/*
+FF6700 - orange
+A64300 - choco
+447BD4 - blue
+052D6E - navy
+2DD700 - green
+1D8C00 - dark green
+*/
+
+
+body {
+	min-height: 100vh;
+	position: relative;
+	background-image: url('/images/back.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+.game{
+	margin: 80px auto;
+	width: 1200px;
+	display: grid;
+	grid-template-rows: 50px 1fr;
+	outline: 3px solid #1D8C00;
+	outline-offset: 1px;
+}
+
+.canvas{
+	width: 100%;
+	display: block;
+}
+
+.gameMenu {
+	background-color: #447BD4;
+	position: relative;
+}
+
+button {
+	position: absolute;
+	right: 20px;
+	top: 5px;
+
+	width: 125px;
+	height: 40px;
+	border: 0;
+	font: 1.4em serif;
+
+	border-radius: 6px;
+
+	cursor: pointer;
+}
+
+.pause {
+	color: black;
+	background-color: #fff;
+}
+
+.resume {
+	color: rgb(255, 255, 255);
+	background-color: rgb(0, 0, 0);
+}
+
+footer {
+	position: absolute;
+	bottom: 0px;
+	height: 100px;
+	background-color: DimGray;
+	width: 100%;
+	display: flex;
+	color: #ebebeb;
+	background-color: rgb(95, 121, 160);
+}
+
+.foot {
+	padding-left: 25px;
+	margin: 20px 50px 0;
+}
+
+footer h1 {
+	margin-bottom: 15px;
+}
+
+footer p {
+	color: #e0e0e0;
 }

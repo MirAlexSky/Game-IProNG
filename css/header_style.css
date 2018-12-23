@@ -1,11 +1,11 @@
 header {
 	height: 50px;
 	width: 100%;
-	background-color: rgb(201, 201, 201);
+	background-color: #1D8C00;
 	display: flex;
 	align-items: center;
 	position: relative;
-	color: rgb(75, 75, 75);
+	color: rgb(255, 255, 255);
 }
 
 /* блок с названием игры */
@@ -17,7 +17,7 @@ header {
 
 /* название игры */
 .title span {
-	color: green;
+	color: #FF6700;
 	font: bold 2em serif;
 }
 

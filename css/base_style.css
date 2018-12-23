@@ -4,6 +4,6 @@
 	outline: none;
 }
 
-body {
-	color: rgb(75, 75, 75);
+html {
+	height: 100%;
 }

@@ -12,10 +12,30 @@
 	<title>Game!</title>
 </head>
 <body>
+	{{ include('header.html') }}
+	<div class="game">
+			<div width="1000px" height="50px" class="gameMenu">
+				<button class="pause">
+					Пауза
+				</button>
+			</div>
+			<canvas width="1000px" height="500px" class="canvas" id="canvasGame"></canvas>
+	</div>
 
-	<!-- {{ include('header.html') }} -->
-
-	<canvas width="1000px" height="500px" id="canvas"></canvas>
+	<footer>
+		<div class="foot foot_autor">
+			<h1>Автор</h1>
+			<p>Alex</p>
+		</div>
+		<div class="foot foot_contacts">
+			<h1>Контакты</h1>
+			<p>miralexsky@gmail.com</p>
+		</div>
+		<div class="foot foot_about">
+			<h1>О нас</h1>
+			<p>Здесь должна находиться интересная информация</p>
+		</div>
+	</footer>
 
 <script src="/js/game.js"></script>
 </body>

@@ -1,47 +1,6 @@
 'use strict'
 
 
-
-// контроль таймеров 
-var timeouts = [];
-var intervals = [];
-
-window.setMyInterval = function(name, callback, time) {
-	const interval = window.setInterval(callback, time);
-	intervals.push({
-		"name": name,
-		"callback": callback,
-		"time": time,
-		"handler": interval
-	});
-	return interval;
-};	
-
-window.setMyTimeout = function(name, callback, time) {
-	const timeout = window.setTimeout(callback, time);	
-	timeouts.push({
-		"name": name,
-		"callback": callback,
-		"time": time,
-		"handler": timeout
-	});
-	return timeout;
-};
-
-window.clearMyInterval = function(interval) {
-	window.clearInterval(interval);
-	for (var int of intervals) {
-		if (int.handler === interval) {intervals.splice(intervals.indexOf(int), 1);}
-	}
-};
-
-window.clearMyTimeout = function(timeout) {
-	window.clearTimeout(timeout);
-	for (var tout of timeouts) {
-		if (tout.handler === timeout) {timeouts.splice(timeouts.indexOf(tout), 1);}
-	}
-};
-
 // библиотека соответсвий клавиш управления с их кодами
 var dirChar = {
 	"upL":    "w",
@@ -74,7 +33,20 @@ var dir = {
 var gameObjectLoad = {
 	'hero': false,
 	'snowMan': false,
+	'back': false,
+	'snowball': false,
 };
+
+// Элементы меню
+var menu = [
+	{
+		"name": "pause",
+		"width": "30",
+		"height": "30",
+		"x": "return canvas.width - this.width - 10",
+		"y": 10,
+	}
+];
 
 var 
 	currentDirHero = [0, 0],
@@ -90,11 +62,35 @@ var
 	imgSnowMan,
 	canvas;
 
+var 
+	backPattern,
+	snowballImg;
+
+var 
+	fails = 0;
+
+var 
+	gameOnPause = false;
+
+
 var loadInterval; // интервал проверки загрузки
 
 $(function() {
-	canvas = document.getElementById('canvas');
+	canvas = document.getElementById('canvasGame');
 	ctx = canvas.getContext('2d');
+
+	$('.pause').click(function() {
+		$(this).toggleClass("resume");
+		
+		if ($(this).hasClass('resume')) {
+			$(this).html("Продолжить");
+			pauseGame();
+		} else {
+			$(this).html("Пауза");
+			resumeGame();
+		}
+	});
+
 
 	// загрузка героя
 	imgHero = new Image();
@@ -110,7 +106,23 @@ $(function() {
 	});
 	imgSnowMan.src = '/images/spriteSnowmanX8.png';
 
-	loadInterval = setMyInterval('loadInterval', loadGame, 1000);
+	loadInterval = setInterval(loadGame, 1000);
+
+	var backImg = new Image();
+	backImg.addEventListener('load', function() {
+
+		backPattern = ctx.createPattern(backImg, 'repeat');
+
+		gameObjectLoad.back = true;
+	});
+	backImg.src = '/images/snow.jpg';
+
+	snowballImg = new Image();
+	snowballImg.addEventListener('load', function() {
+		gameObjectLoad.snowball = true;
+	});
+	snowballImg.src = '/images/snowball.png';
+
 });
 
 /*
@@ -121,16 +133,20 @@ $(function() {
 function loadGame() {
 
 	for (var obj in gameObjectLoad) {
-		if (!obj) {return;}
+		console.log(gameObjectLoad[obj]);
+		if (!gameObjectLoad[obj]) {return;}
 	}
 
-	clearMyInterval(loadInterval); // это нам больше не нужно
+	clearInterval(loadInterval); // это нам больше не нужно
 	startGame();
 }
 
+var 
+	drawInterval;
+
 function startGame() {
 
-	setMyInterval("draw", draw, 3); // рисуем холст 20 кадров в секунду
+	drawInterval = setInterval(draw, 3); // рисуем холст 20 кадров в секунду
 	startEnimies(); // Запускаем снеговиков!
 }
 
@@ -143,6 +159,11 @@ var
 function draw() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+	ctx.save();
+	ctx.fillStyle = backPattern;
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+	ctx.restore();
+	
 	// рисукм героя
 	ctx.drawImage(imgHero, 0, heightNow, 128, height, positionHero[0], positionHero[1], 128, height);
 
@@ -158,8 +179,7 @@ function draw() {
 
 		ctx.beginPath();
 		{
-			ctx.arc(x, y, 5, 0, Math.PI * 2, false);
-			ctx.fill();
+			ctx.drawImage(snowballImg, bullets[i].x,  bullets[i].y, 20, 20);
 		}
 		ctx.closePath();
 	}
@@ -168,36 +188,51 @@ function draw() {
 // смена спрайтов анимации героя
 var heraFrameTimeout;
 function moveHeroFrame() {
+	if (gameOnPause) {return;}
+
 	if (moveNowHero) {
 		countHero = (countHero + 1) % 3;
 		heightNow = countHero * height;
 
-		clearMyTimeout(heraFrameTimeout);
-		heraFrameTimeout = setMyTimeout("frameHero",moveHeroFrame, 100);
+		clearTimeout(heraFrameTimeout);
+		heraFrameTimeout = setTimeout(moveHeroFrame, 100);
 	} else {
 		countHero = 0;
 		heightNow = 0;
-		clearMyTimeout(heraFrameTimeout);
+		clearTimeout(heraFrameTimeout);
 	}
 }
 
 // hero moving
-var moveTimeout;
+var moveHeroTimeout;
 function startMove() {
 	if (!moveNowHero) {
-		clearMyTimeout(moveTimeout);
+		clearTimeout(moveHeroTimeout);
+		return;
+	}
+
+	if (gameOnPause) {return;}
+
+	if ((positionHero[0] + currentDirHero[0] < -20) || (positionHero[1] + currentDirHero[1] < -20) ||
+		(positionHero[0] + currentDirHero[0] + 128 > canvas.width + 20) || (positionHero[1] + currentDirHero[1] + 128 > canvas.height + 20)) {
+		clearTimeout(moveHeroTimeout);
+		moveHeroTimeout = setTimeout(startMove, 3);
 		return;
 	}
 
 	positionHero[0] += currentDirHero[0];
 	positionHero[1] += currentDirHero[1];
 
-	clearMyTimeout(moveTimeout);
-	moveTimeout = setMyTimeout("moveHero", startMove, 3);
+	clearTimeout(moveHeroTimeout);
+	moveHeroTimeout = setTimeout(startMove, 3);
 
 }
 
 document.onkeydown = function(even) {
+
+	if (gameOnPause) {
+		return;
+	}
 
 	switch (even.key) {
 		case dirChar.upA: 
@@ -227,6 +262,10 @@ document.onkeydown = function(even) {
 };
 
 document.onkeyup = function(even) {
+
+	if (gameOnPause) {
+		return;
+	}
 
 	switch (even.key) {
 		case dirChar.upA: 
@@ -297,6 +336,8 @@ function moveBullet(bullet) {
 	var move = function() {
 		if (bullets.indexOf(bullet) == -1) {return;}
 
+		if (gameOnPause) {return;}
+
 		if (bullet.x > canvas.width) {
 			bullets.splice(bullets.indexOf(bullet), 1);
 			return;
@@ -304,18 +345,19 @@ function moveBullet(bullet) {
 
 		for (var i = 0; i < enemies.length; i++) {
 			if ((bullet.x > enemies[i].x) && (bullet.x < enemies[i].x + 128) &&
-				(bullet.y > enemies[i].y) && (bullet.y < enemies[i].y + 128)) {
+				(bullet.x + 20 > enemies[i].x) && (bullet.x + 20 < enemies[i].x + 128) &&
+				(bullet.y > enemies[i].y) && (bullet.y < enemies[i].y + 128) &&
+				(bullet.y + 20 > enemies[i].y) && (bullet.y + 20 < enemies[i].y + 128)) {
 
 					enemies.splice(i, 1);
 					bullets.splice(bullets.indexOf(bullet), 1);
-					console.log('убит, бич');
 					return;
 			}
 		}
 	
 		bullet.x++;
 
-		setMyTimeout("bulletAnim", move, 5);
+		setTimeout(move, 5);
 	};
 	move();
 }
@@ -328,22 +370,24 @@ function startShoot() {
 	var shoot = function() {
 		if (!shootNowHero) {return;}
 
+		if (gameOnPause) {return;}
+
 		// новый снаряд в текущей позиции
 		// добавляем его в массив снарядов
-		var bullet = new Bullet(positionHero[0] + 125, positionHero[1] + 40);
+		var bullet = new Bullet(positionHero[0] + 115, positionHero[1] + 30);
 		bullets.push(bullet);
 
 		// запускаем анимацию пули
 		moveBullet(bullet);
 
 		// пока пробел зажат, стреляем
-		timeoutShoot = setMyTimeout("shooting", shoot, 500);
+		timeoutShoot = setTimeout(shoot, 500);
 	};
 	shoot();
 }
 
 function stopShoot() {
-	clearMyTimeout(timeoutShoot);
+	clearTimeout(timeoutShoot);
 	shootNowHero = false;
 }
 
@@ -352,15 +396,25 @@ function stopShoot() {
 var runEnemies;
 function startEnimies() {
 
-	runEnemies = setMyInterval("runEnemies", function() {
+	runEnemies = setInterval(function() {
+
 		var posY = ~~(Math.random() * canvas.height);
 		if (posY > canvas.height - 150) {
 			posY -= 150;
-		} else if (posY < 30) {
-			posY += 30;
+		} else if (posY < 50) {
+			posY += 50;
 		}
 
+		
+		// перемещение врагов по оси y
+		var originY = posY;
+		var stepY = ~~(Math.random() * 10) - 5;
+
+		if (stepY == 0) {stepY++;}
+
 		var enemy = {
+			"originY": originY,
+			"stepY": stepY,
 			"x": canvas.width,
 			"y": posY,
 			"heightNow": 0,
@@ -369,37 +423,37 @@ function startEnimies() {
 		enemies.push(enemy);
 
 		animSnowMan(enemy);
-	}, 1000);
+	}, 2000);
 
 }
 
 // snowman's move animation
+var 
+	enemyFrame,
+	enemyMove;
+
 function animSnowMan(snowMan) {
 
-	// перемещение врагов по оси y
-	/* 
-	var originY = snowMan.y;
-	var stepY = ~~(Math.random() * 10) - 5;
-	*/
-	
 	// Кадры
 	var moveFrame = function() {
 		if (enemies.indexOf(snowMan) == -1) {return;}
 
+		if (gameOnPause) {return;}
 
 		snowMan.heightNow = snowMan.count * height;	
 		snowMan.count = (snowMan.count + 1) % 8;
 
-		setMyTimeout("enemyFrame", moveFrame, 80);
+		enemyFrame = setTimeout(moveFrame, 80);
 	};
 
 	// положение
 	var moveDist = function() {
 		if (enemies.indexOf(snowMan) == -1) {return;}
 
-		//console.log(snowMan);
+		if (gameOnPause) {return;}
 
 		if (snowMan.x < -100) {
+			fail();
 			enemies.splice(enemies.indexOf(snowMan), 1);
 			return;
 		}
@@ -407,20 +461,71 @@ function animSnowMan(snowMan) {
 		snowMan.x--;	
 
 		// Перемещение по y
-		// if (stepY < 0) {
-		// 	snowMan.y--;
-		// } else {
-		// 	snowMan.y++;
-		// }
 
-		// if ((snowMan.y - originY < -50) || (snowMan.y - originY > 50)) {
-		// 	stepY = -stepY;
-		// }
+		if (snowMan.stepY < 0) {
+			snowMan.y--;
+		} else {
+			snowMan.y++;
+		}
 
-		setMyTimeout("enemyMove", moveDist, 5);
+		if ((snowMan.y - snowMan.originY < -50) || (snowMan.y - snowMan.originY > 50)) {
+			snowMan.stepY = -snowMan.stepY;
+		}
+
+		enemyMove = setTimeout(moveDist, 5);
 	};
 
 	moveDist();
 	moveFrame();
+}
+
+function fail() {
+	fails++;
+
+	if (fails > 2) {
+		gameOver();
+	}
+}
+
+function gameOver() {
+	pauseGame();
+
+	ctx.font = "48px serif";
+	ctx.fillText("Вы проиграли", canvas.width/2 - 100, canvas.height / 2 - 100);
+
+	$('.pause').hide();
+}
+
+function pauseGame() {
+	gameOnPause = true;
+
+	clearTimeout(heraFrameTimeout);
+	clearTimeout(moveHeroTimeout);
+
+	clearInterval(runEnemies);
+
+	clearInterval(drawInterval);
+}
+
+function resumeGame() {
+	gameOnPause = false;
+
+	drawInterval = setInterval(draw, 3);
+
+	for (var prop in keyIsDown) {
+		keyIsDown[prop] = false;
+	}
+	setDirection();
+
+	enemies.forEach( function(item, i, arr) {
+		animSnowMan(item);
+	});
+
+	bullets.forEach( function(item, i, arr) {
+		moveBullet(item);
+	});
+
+	startEnimies();
+
 }
 

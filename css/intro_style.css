@@ -1,4 +1,9 @@
 
+body {
+	background-image: url(/images/back.jpg);
+	background-size: cover;
+}
+
 /* Область вывода сообщений для игрока */
 .intro {
 	width: 100%;
