@@ -229,6 +229,7 @@ function startMove() {
 }
 
 document.onkeydown = function(even) {
+	event.preventDefault();
 
 	if (gameOnPause) {
 		return;

@@ -14,10 +14,11 @@ body {
 	background-image: url('/images/back.jpg');
 	background-repeat: no-repeat;
 	background-size: cover;
+	border-bottom: 1px solid black;
 }
 
 .game{
-	margin: 80px auto;
+	margin: 30px auto 130px;
 	width: 1200px;
 	display: grid;
 	grid-template-rows: 50px 1fr;
